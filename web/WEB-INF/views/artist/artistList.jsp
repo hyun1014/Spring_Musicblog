@@ -26,26 +26,26 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">MusicBlog</a>
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/">MusicBlog</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/artist">Artist</a>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/artist">Artist</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Member</a>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/member">Member</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Album</a>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/album">Album</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Track</a>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/track">Track</a>
                 </li>
             </ul>
         </div>
@@ -55,7 +55,7 @@
         <c:if test="${not empty artistList}">
             <ul>
                 <c:forEach var="artist" items="${artistList}">
-                    <li><a class="no_linkdecoration" href="artist/detail?target=${fn:replace(artist, " ", "-")}">
+                    <li><a class="no_linkdecoration" href="${pageContext.request.contextPath}/artist/detail?target=${fn:replace(artist, " ", "-")}">
                             ${artist}</a></li>
                 </c:forEach>
             </ul>

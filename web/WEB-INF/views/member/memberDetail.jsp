@@ -1,14 +1,16 @@
 <%--
   Created by IntelliJ IDEA.
   User: hklinux
-  Date: 20. 11. 12.
-  Time: 오후 5:41
+  Date: 20. 11. 14.
+  Time: 오전 1:48
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
-    <title>Musicblog home</title>
+    <title>Member detail</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -24,7 +26,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">MusicBlog</a>
+    <a class="navbar-brand" href="${pageContext.request.contextPath}/">MusicBlog</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -49,17 +51,15 @@
     </div>
 </nav>
 <div class="container" style="padding:50px;">
-    <h3>Menu</h3>
+    <h3>Member Detail</h3>
+    <h4>${target.name}</h4>
     <ul>
-        <li><a class='no_linkdecoration' href="${pageContext.request.contextPath}/artist">Artist List</a></li>
-        <li><a class='no_linkdecoration' href="${pageContext.request.contextPath}/member">Member List</a></li>
-        <li><a class='no_linkdecoration' href="${pageContext.request.contextPath}/album">Album List</a></li>
-        <li><a class='no_linkdecoration' href="${pageContext.request.contextPath}/track">Track List</a></li>
+        <li>Team - <a class="no_linkdecoration" href="${pageContext.request.contextPath}/artist/detail?target=${fn:replace(target.team, " ", "-")}">${target.team}</a></li>
     </ul>
-    홈이다.
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
+

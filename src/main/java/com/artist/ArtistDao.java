@@ -19,11 +19,19 @@ public class ArtistDao {
     private PreparedStatement psmt;
     private ResultSet rs;
 
-    public List<String> getAllArtists(){
-        List<String> artistList = new ArrayList<>();
+    public ArtistDao(){
         try{
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, pw);
+        }
+        catch(ClassNotFoundException | SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public List<String> getAllArtists(){
+        List<String> artistList = new ArrayList<>();
+        try{
             String sql = "SELECT name FROM artist";
             psmt = conn.prepareStatement(sql);
             rs = psmt.executeQuery();
@@ -39,8 +47,6 @@ public class ArtistDao {
     public Artist getArtistDetail(String target){
         Artist artist = new Artist();
         try{
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, pw);
             String sql = "SELECT * FROM artist WHERE name=? LIMIT 1";
             psmt = conn.prepareStatement(sql);
             psmt.setString(1, target);
@@ -63,8 +69,6 @@ public class ArtistDao {
     public List<String> getMembersInArtist(String artist){
         List<String> list = new ArrayList<>();
         try{
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, pw);
             String sql = "SELECT name FROM member WHERE team=?";
             psmt = conn.prepareStatement(sql);
             psmt.setString(1, artist);
@@ -83,8 +87,6 @@ public class ArtistDao {
     public List<String> getAlbumsFromArtist(String artist){
         List<String> list = new ArrayList<>();
         try{
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, pw);
             String sql = "SELECT title FROM album WHERE artist=?";
             psmt = conn.prepareStatement(sql);
             psmt.setString(1, artist);
@@ -103,8 +105,6 @@ public class ArtistDao {
     public List<String> getTracksFromArtist(String artist){
         List<String> list = new ArrayList<>();
         try{
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, pw);
             String sql = "SELECT title FROM track WHERE artist=? LIMIT 5";
             psmt = conn.prepareStatement(sql);
             psmt.setString(1, artist);

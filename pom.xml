@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>dbconn</artifactId>
+    <artifactId>musicblog</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
         <org.springframework-version>5.2.3.RELEASE</org.springframework-version>

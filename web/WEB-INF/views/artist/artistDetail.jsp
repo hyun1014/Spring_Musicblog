@@ -26,26 +26,26 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">MusicBlog</a>
+    <a class="navbar-brand" href="${pageContext.request.contextPath}/">MusicBlog</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/artist">Artist</a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/artist">Artist</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/">Member</a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/member">Member</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/">Album</a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/album">Album</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/">Track</a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/track">Track</a>
             </li>
         </ul>
     </div>
@@ -60,7 +60,7 @@
                 Member<br>
                 <ul>
                     <c:forEach var="member" items="${memberList}">
-                        <li><a class='no_linkdecoration' href="member?target=${fn:replace(member, " ", "-")}">${member}</a></li>
+                        <li><a class='no_linkdecoration' href="${pageContext.request.contextPath}/member?target=${fn:replace(member, " ", "-")}">${member}</a></li>
                     </c:forEach>
                 </ul>
             </li>
@@ -70,7 +70,7 @@
             <c:if test="${not empty albumList}">
                 <ul>
                     <c:forEach var="album" items="${albumList}">
-                        <li><a class='no_linkdecoration' href="album?target=${fn:replace(album, " ", "-")}">${album}</a></li>
+                        <li><a class='no_linkdecoration' href="${pageContext.request.contextPath}/album?target=${fn:replace(album, " ", "-")}">${album}</a></li>
                     </c:forEach>
                 </ul>
             </c:if>
