@@ -1,5 +1,6 @@
 package com.track;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -65,5 +66,32 @@ public class TrackDao {
             e.printStackTrace();
         }
         return null;
+    }
+    public String insertTrack(Track track){
+        try{
+            String sql = "INSERT INTO track (title, artist, album, lyrics, youtubeId) VALUES (?, ?, ?, ?, ?)";
+            psmt = conn.prepareStatement(sql);
+            psmt.setString(1, track.getTitle());
+            psmt.setString(2, track.getArtist());
+            if(track.getAlbum()!=null)
+                psmt.setString(3, track.getAlbum());
+            else
+                psmt.setString(3, null);
+            if(track.getLyrics()!=null)
+                psmt.setString(4, track.getLyrics());
+            else
+                psmt.setString(4, null);
+            if(track.getYoutubeId()!=null)
+                psmt.setString(5, track.getYoutubeId());
+            else
+                psmt.setString(5, null);
+            psmt.executeUpdate();
+        }
+        catch (SQLException e){
+            if(e instanceof MySQLIntegrityConstraintViolationException)
+                return "Duplicate PK";
+            return "DB Error";
+        }
+        return "Success";
     }
 }

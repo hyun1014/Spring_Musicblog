@@ -1,6 +1,7 @@
 package com.artist;
 
 import com.member.Member;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -119,5 +120,28 @@ public class ArtistDao {
             e.printStackTrace();
         }
         return null;
+    }
+    public String insertArtist(Artist artist){
+        int res = 0;
+        try{
+            String sql = "INSERT INTO artist (name, company, artistInfo) values (?, ?, ?)";
+            psmt = conn.prepareStatement(sql);
+            psmt.setString(1, artist.getName());
+            if(artist.getCompany()!=null)
+                psmt.setString(2, artist.getCompany());
+            else
+                psmt.setString(2, null);
+            if(artist.getArtistInfo()!=null)
+                psmt.setString(3, artist.getArtistInfo());
+            else
+                psmt.setString(3, null);
+            res = psmt.executeUpdate();
+        }
+        catch (SQLException e){
+            if(e instanceof MySQLIntegrityConstraintViolationException)
+                return "Duplicate PK";
+            return "DB Error";
+        }
+        return "Success";
     }
 }

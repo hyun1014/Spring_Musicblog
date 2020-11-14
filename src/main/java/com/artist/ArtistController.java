@@ -27,6 +27,7 @@ public class ArtistController {
     }
     @RequestMapping("/detail")
     public String artistDetail(Model model, HttpServletRequest request){
+        // 쿼리스트링에서 -로 바꿨던걸 다시 공백으로 변환 (실제 db 저장값은 공백이므로)
         String target = request.getParameter("target").replaceAll("-", " ");
         Artist artist = dao.getArtistDetail(target);
         model.addAttribute("target", artist);
@@ -43,5 +44,21 @@ public class ArtistController {
             model.addAttribute("trackList", tracks);
         }
         return "artist/artistDetail";
+    }
+    @RequestMapping("/register")
+    public String artistRegister(@ModelAttribute("art") Artist artist){
+        return "artist/artistRegister";
+    }
+    @RequestMapping(value = "/registercheck", method = RequestMethod.POST)
+    public String artistRegisterCheck(@ModelAttribute("art") Artist artist, Model model){
+        // 입력값이 비어있으면 null로 바꿈
+        if(artist.getCompany().equals(""))
+            artist.setCompany(null);
+        if(artist.getArtistInfo().equals(""))
+            artist.setArtistInfo(null);
+        String sqlResult = dao.insertArtist(artist);
+        if(sqlResult.equals("Duplicate PK"))
+            model.addAttribute("error", "이미 존재하는 아티스트입니다.");
+        return "artist/artistRegisterCheck";
     }
 }

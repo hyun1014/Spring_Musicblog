@@ -52,6 +52,7 @@
     </nav>
     <div class="container" style="padding:50px;">
         <h3>Artist List</h3>
+        <h6><a class="no_linkdecoration" href="${pageContext.request.contextPath}/artist/register">아티스트 등록하기</a></h6>
         <c:if test="${not empty artistList}">
             <ul>
                 <c:forEach var="artist" items="${artistList}">

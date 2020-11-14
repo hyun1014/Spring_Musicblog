@@ -1,5 +1,6 @@
 package com.member;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -62,5 +63,20 @@ public class MemberDao {
             e.printStackTrace();
         }
         return null;
+    }
+    public String insertMember(Member member){
+        try{
+            String sql = "INSERT INTO member (name, team) VALUES (?,?)";
+            psmt = conn.prepareStatement(sql);
+            psmt.setString(1, member.getName());
+            psmt.setString(2, member.getTeam());
+            psmt.executeUpdate();
+        }
+        catch (SQLException e){
+            if(e instanceof MySQLIntegrityConstraintViolationException)
+                return "Duplicate PK";
+            return "DB Error";
+        }
+        return "Success";
     }
 }

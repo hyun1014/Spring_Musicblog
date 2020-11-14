@@ -1,5 +1,6 @@
 package com.album;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -81,5 +82,20 @@ public class AlbumDao {
             e.printStackTrace();
         }
         return null;
+    }
+    public String insertAlbum(Album album){
+        try{
+            String sql = "INSERT into album (title, artist) VALUES (?, ?)";
+            psmt = conn.prepareStatement(sql);
+            psmt.setString(1, album.getTitle());
+            psmt.setString(2, album.getArtist());
+            psmt.executeUpdate();
+        }
+        catch (SQLException e){
+            if(e instanceof MySQLIntegrityConstraintViolationException)
+                return "Duplicate PK";
+            return "DB Error";
+        }
+        return "Success";
     }
 }
