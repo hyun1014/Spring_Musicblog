@@ -52,6 +52,9 @@
 </nav>
 <div class="container" style="padding:50px;">
     <h3>Member List</h3>
+    <c:if test="${not empty user}">
+        <h6><a class="no_linkdecoration" href="${pageContext.request.contextPath}/member/register">멤버 등록하기</a></h6>
+    </c:if>
     <c:if test="${not empty memberList}">
         <ul>
             <c:forEach var="member" items="${memberList}">

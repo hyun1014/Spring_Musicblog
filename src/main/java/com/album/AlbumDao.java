@@ -1,5 +1,7 @@
 package com.album;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -8,10 +10,11 @@ import java.util.List;
 
 @Repository
 public class AlbumDao {
+    Dotenv dotenv;
     private String driver = "com.mysql.jdbc.Driver";
-    private String url = "jdbc:mysql://127.0.0.1:3306/musicblog?useSSL=false";
-    private String user = "user";
-    private String pw = "1014";
+    private String url;
+    private String user;
+    private String pw;
 
     private Connection conn;
     private PreparedStatement psmt;
@@ -19,6 +22,10 @@ public class AlbumDao {
 
     public AlbumDao(){
         try{
+            dotenv = Dotenv.configure().directory("./").filename(".env").load();
+            url = dotenv.get("url");
+            user = dotenv.get("user");
+            pw = dotenv.get("pw");
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, pw);
         }
@@ -81,5 +88,21 @@ public class AlbumDao {
             e.printStackTrace();
         }
         return null;
+    }
+    public String insertAlbum(Album album, String author){
+        try{
+            String sql = "INSERT into album (title, artist, author) VALUES (?, ?, ?)";
+            psmt = conn.prepareStatement(sql);
+            psmt.setString(1, album.getTitle());
+            psmt.setString(2, album.getArtist());
+            psmt.setString(3, author);
+            psmt.executeUpdate();
+        }
+        catch (SQLException e){
+            if(e instanceof MySQLIntegrityConstraintViolationException)
+                return "Duplicate PK";
+            return "DB Error";
+        }
+        return "Success";
     }
 }

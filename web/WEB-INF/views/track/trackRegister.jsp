@@ -2,15 +2,16 @@
   Created by IntelliJ IDEA.
   User: hklinux
   Date: 20. 11. 14.
-  Time: 오전 1:48
+  Time: 오후 4:49
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
-    <title>Album list</title>
+    <title>Track Register</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -51,21 +52,17 @@
     </div>
 </nav>
 <div class="container" style="padding:50px;">
-    <h3>Album List</h3>
-    <c:if test="${not empty user}">
-        <h6><a class="no_linkdecoration" href="${pageContext.request.contextPath}/album/register">앨범 등록하기</a></h6>
-    </c:if>
-    <c:if test="${not empty albumList}">
-        <ul>
-            <c:forEach var="album" items="${albumList}">
-                <li><a class="no_linkdecoration" href="${pageContext.request.contextPath}/album/detail?target=${fn:replace(album, " ", "-")}">
-                        ${album}</a></li>
-            </c:forEach>
-        </ul>
-    </c:if>
-    <c:if test="${empty albumList}">
-        등록된 앨범이 없습니다.
-    </c:if>
+    <h3>Track Register</h3>
+    <h6>* 표시는 필수 항목입니다.</h6>
+    <form:form action="${pageContext.request.contextPath}/track/registercheck" method="post" modelAttribute="track">
+        *제목: <form:input path="title" required="required"/><br/>
+        *아티스트: <form:input path="artist" required="required"/><br/>
+        앨범: <form:input path="album"/><br/>
+        유튜브 영상 링크 ID: <form:input path="youtubeId"/><br/>
+        가사: <br/>
+        <form:textarea path="lyrics" cols="50" rows="20"/><br/>
+        <input type="submit"/>
+    </form:form>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
