@@ -54,11 +54,13 @@
 <div class="container" style="padding:50px;">
     <h3>Track Register</h3>
     <h6>* 표시는 필수 항목입니다.</h6>
-    <form:form action="${pageContext.request.contextPath}/artist/registercheck" method="post" modelAttribute="art">
-        *이름: <form:input path="name" required="required"/><br/>
-        소속사: <form:input path="company"/><br/>
-        아티스트 정보 <br/>
-        <form:textarea path="artistInfo" cols="50" rows="10"/>
+    <form:form action="${pageContext.request.contextPath}/track/registercheck" method="post" modelAttribute="track">
+        *제목: <form:input path="title" required="required"/><br/>
+        *아티스트: <form:input path="artist" required="required"/><br/>
+        앨범: <form:input path="album"/><br/>
+        유튜브 영상 링크 ID: <form:input path="youtubeId"/><br/>
+        가사: <br/>
+        <form:textarea path="lyrics" cols="50" rows="20"/><br/>
         <input type="submit"/>
     </form:form>
 </div>

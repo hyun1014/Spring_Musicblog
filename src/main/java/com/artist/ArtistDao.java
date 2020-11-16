@@ -2,6 +2,7 @@ package com.artist;
 
 import com.member.Member;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -11,10 +12,11 @@ import java.util.List;
 
 @Repository
 public class ArtistDao {
+    Dotenv dotenv;
     private String driver = "com.mysql.jdbc.Driver";
-    private String url = "jdbc:mysql://127.0.0.1:3306/musicblog?useSSL=false";
-    private String user = "user";
-    private String pw = "1014";
+    private String url;
+    private String user;
+    private String pw;
 
     private Connection conn;
     private PreparedStatement psmt;
@@ -22,6 +24,10 @@ public class ArtistDao {
 
     public ArtistDao(){
         try{
+            dotenv = Dotenv.configure().directory("./").filename(".env").load();
+            url = dotenv.get("url");
+            user = dotenv.get("user");
+            pw = dotenv.get("pw");
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, pw);
         }
@@ -121,10 +127,10 @@ public class ArtistDao {
         }
         return null;
     }
-    public String insertArtist(Artist artist){
+    public String insertArtist(Artist artist, String author){
         int res = 0;
         try{
-            String sql = "INSERT INTO artist (name, company, artistInfo) values (?, ?, ?)";
+            String sql = "INSERT INTO artist (name, company, artistInfo, author) values (?, ?, ?, ?)";
             psmt = conn.prepareStatement(sql);
             psmt.setString(1, artist.getName());
             if(artist.getCompany()!=null)
@@ -135,6 +141,7 @@ public class ArtistDao {
                 psmt.setString(3, artist.getArtistInfo());
             else
                 psmt.setString(3, null);
+            psmt.setString(4, author);
             res = psmt.executeUpdate();
         }
         catch (SQLException e){

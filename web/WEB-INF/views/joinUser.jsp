@@ -1,8 +1,8 @@
 <%--
   Created by IntelliJ IDEA.
   User: hklinux
-  Date: 20. 11. 14.
-  Time: 오후 4:49
+  Date: 20. 11. 16.
+  Time: 오후 4:46
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" language="java" %>
@@ -11,7 +11,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
-    <title>Track Register</title>
+    <title>Join</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -52,23 +52,13 @@
     </div>
 </nav>
 <div class="container" style="padding:50px;">
-    <c:if test="${empty error}"><h3>Track registered</h3></c:if>
-    <c:if test="${not empty error}">
-        <h3>Album Register failed</h3>
-        <h4>${error}</h4>
-    </c:if>
-    <ul>
-        <li>제목: ${track.title}</li>
-        <li>아티스트: ${track.artist}</li>
-        <li>앨범: <c:if test="${not empty track.album}">${track.album}</c:if><c:if test="${empty track.album}">정보가 없습니다.</c:if></li>
-        <li>유튜브 영상 링크 ID: <c:if test="${not empty track.youtubeId}">${track.youtubeId}</c:if><c:if test="${empty track.youtubeId}">정보가 없습니다.</c:if></li>
-        <li>가사: <br/>
-            <pre>
-            <c:if test="${not empty track.lyrics}">${track.lyrics}</c:if><c:if test="${empty track.lyrics}">정보가 없습니다.</c:if>
-            </pre>
-        </li>
-    </ul>
-    <a class="no_linkdecoration" href="${pageContext.request.contextPath}/track/">Go to track list</a>
+    <h3>회원가입</h3>
+    <form:form action="${pageContext.request.contextPath}/joincheck" method="post" modelAttribute="user">
+        ID: <form:input path="id" required="required"/><br/>
+        PW: <form:password path="pw" required="required"/><br/>
+        Nickname: <form:input path="nickname" required="required"/><br/>
+        <input type="submit"/>
+    </form:form>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>

@@ -1,6 +1,7 @@
 package com.track;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -9,10 +10,11 @@ import java.util.List;
 
 @Repository
 public class TrackDao {
+    Dotenv dotenv;
     private String driver = "com.mysql.jdbc.Driver";
-    private String url = "jdbc:mysql://127.0.0.1:3306/musicblog?useSSL=false";
-    private String user = "user";
-    private String pw = "1014";
+    private String url;
+    private String user;
+    private String pw;
 
     private Connection conn;
     private PreparedStatement psmt;
@@ -20,6 +22,10 @@ public class TrackDao {
 
     public TrackDao(){
         try{
+            dotenv = Dotenv.configure().directory("./").filename(".env").load();
+            url = dotenv.get("url");
+            user = dotenv.get("user");
+            pw = dotenv.get("pw");
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, pw);
         }
@@ -67,9 +73,9 @@ public class TrackDao {
         }
         return null;
     }
-    public String insertTrack(Track track){
+    public String insertTrack(Track track, String author){
         try{
-            String sql = "INSERT INTO track (title, artist, album, lyrics, youtubeId) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO track (title, artist, album, lyrics, youtubeId, author) VALUES (?, ?, ?, ?, ?, ?)";
             psmt = conn.prepareStatement(sql);
             psmt.setString(1, track.getTitle());
             psmt.setString(2, track.getArtist());
@@ -85,6 +91,7 @@ public class TrackDao {
                 psmt.setString(5, track.getYoutubeId());
             else
                 psmt.setString(5, null);
+            psmt.setString(6, author);
             psmt.executeUpdate();
         }
         catch (SQLException e){

@@ -2,3 +2,4 @@ musicblog.iml
 .idea
 out
 target
+.env

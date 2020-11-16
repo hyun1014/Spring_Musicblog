@@ -52,6 +52,9 @@
 </nav>
 <div class="container" style="padding:50px;">
     <h3>Album List</h3>
+    <c:if test="${not empty user}">
+        <h6><a class="no_linkdecoration" href="${pageContext.request.contextPath}/album/register">앨범 등록하기</a></h6>
+    </c:if>
     <c:if test="${not empty albumList}">
         <ul>
             <c:forEach var="album" items="${albumList}">

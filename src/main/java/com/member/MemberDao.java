@@ -1,6 +1,7 @@
 package com.member;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -9,10 +10,11 @@ import java.util.List;
 
 @Repository
 public class MemberDao {
+    Dotenv dotenv;
     private String driver = "com.mysql.jdbc.Driver";
-    private String url = "jdbc:mysql://127.0.0.1:3306/musicblog?useSSL=false";
-    private String user = "user";
-    private String pw = "1014";
+    private String url;
+    private String user;
+    private String pw;
 
     private Connection conn;
     private PreparedStatement psmt;
@@ -20,6 +22,10 @@ public class MemberDao {
 
     public MemberDao(){
         try{
+            dotenv = Dotenv.configure().directory("./").filename(".env").load();
+            url = dotenv.get("url");
+            user = dotenv.get("user");
+            pw = dotenv.get("pw");
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, pw);
         }
@@ -64,17 +70,23 @@ public class MemberDao {
         }
         return null;
     }
-    public String insertMember(Member member){
+    public String insertMember(Member member, String author){
         try{
-            String sql = "INSERT INTO member (name, team) VALUES (?,?)";
+            String sql = "INSERT INTO member (name, team, author) VALUES (?,?,?)";
             psmt = conn.prepareStatement(sql);
             psmt.setString(1, member.getName());
             psmt.setString(2, member.getTeam());
+            psmt.setString(3, author);
             psmt.executeUpdate();
         }
         catch (SQLException e){
-            if(e instanceof MySQLIntegrityConstraintViolationException)
+            if(e instanceof MySQLIntegrityConstraintViolationException){
+                e.printStackTrace();
+                System.out.println(e.getSQLState());
+                System.out.println(e.getMessage());
+                System.out.println(e.getErrorCode());
                 return "Duplicate PK";
+            }
             return "DB Error";
         }
         return "Success";

@@ -52,6 +52,9 @@
 </nav>
 <div class="container" style="padding:50px;">
     <h3>Track List</h3>
+    <c:if test="${not empty user}">
+        <h6><a class="no_linkdecoration" href="${pageContext.request.contextPath}/track/register">곡 등록하기</a></h6>
+    </c:if>
     <c:if test="${not empty trackList}">
         <ul>
             <c:forEach var="track" items="${trackList}">
