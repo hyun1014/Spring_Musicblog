@@ -64,6 +64,7 @@ public class TrackDao {
                 track.setAlbum(rs.getString("album"));
                 track.setLyrics(rs.getString("lyrics"));
                 track.setYoutubeId(rs.getString("youtubeId"));
+                track.setAuthor(rs.getString("author"));
             }
             if(track.getTitle()!=null)
                 return track;

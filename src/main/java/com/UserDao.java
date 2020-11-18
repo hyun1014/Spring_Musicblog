@@ -2,40 +2,28 @@ package com;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import javax.inject.Inject;
+import javax.sql.DataSource;
 import java.io.*;
 import java.sql.*;
 
 @Repository
 public class UserDao {
-    Dotenv dotenv;
-    private String driver = "com.mysql.jdbc.Driver";
-    private String url;
-    private String user;
-    private String pw;
-
+    @Autowired
+    DriverManagerDataSource dataSource;
     private Connection conn;
     private PreparedStatement psmt;
     private ResultSet rs;
 
-    public UserDao(){
-        try{
-            dotenv = Dotenv.configure().directory("./").filename(".env").load();
-            url = dotenv.get("url");
-            user = dotenv.get("user");
-            pw = dotenv.get("pw");
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, pw);
-        }
-        catch(ClassNotFoundException | SQLException e){
-            e.printStackTrace();
-        }
-    }
-
     public User getUserInfo(String id, String pw){
         User user = new User();
         try{
+            conn = dataSource.getConnection();
             String sql = "SELECT * FROM user WHERE id=? AND pw=?";
             psmt = conn.prepareStatement(sql);
             psmt.setString(1, id);
@@ -46,6 +34,7 @@ public class UserDao {
                 user.setPw(rs.getString("pw"));
                 user.setNickname(rs.getString("nickname"));
             }
+            conn.close();
             if(user.getId()!=null)
                 return user;
         }
@@ -56,12 +45,14 @@ public class UserDao {
     }
     public String insertUser(User user){
         try{
+            conn = dataSource.getConnection();
             String sql = "INSERT INTO user (id, pw, nickname) VALUES(?, ?, ?)";
             psmt = conn.prepareStatement(sql);
             psmt.setString(1, user.getId());
             psmt.setString(2, user.getPw());
             psmt.setString(3, user.getNickname());
             psmt.executeUpdate();
+            conn.close();
         }
         catch (SQLException e){
             e.printStackTrace();

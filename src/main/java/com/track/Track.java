@@ -6,6 +6,7 @@ public class Track {
     private String album = "Default";
     private String youtubeId;
     private String lyrics;
+    private String author;
 
     public String getTitle(){return this.title;}
     public void setTitle(String title){this.title = title;}
@@ -21,4 +22,7 @@ public class Track {
 
     public String getLyrics(){return this.lyrics;}
     public void setLyrics(String lyrics){this.lyrics = lyrics;}
+
+    public String getAuthor(){return this.author;}
+    public void setAuthor(String author){this.author = author;}
 }

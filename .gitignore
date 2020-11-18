@@ -3,3 +3,4 @@ musicblog.iml
 out
 target
 .env
+resources/jdbc.properties

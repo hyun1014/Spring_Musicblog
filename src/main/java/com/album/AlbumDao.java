@@ -62,6 +62,7 @@ public class AlbumDao {
             while(rs.next()){
                 album.setTitle(rs.getString("title"));
                 album.setArtist(rs.getString("artist"));
+                album.setAuthor(rs.getString("author"));
             }
             if(album.getTitle()!=null)
                 return album;

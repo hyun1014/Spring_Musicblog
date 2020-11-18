@@ -61,6 +61,7 @@ public class MemberDao {
             while(rs.next()){
                 member.setName(rs.getString("name"));
                 member.setTeam(rs.getString("team"));
+                member.setAuthor(rs.getString("author"));
             }
             if(member.getName()!=null)
                 return member;

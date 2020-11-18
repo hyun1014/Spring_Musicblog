@@ -1,10 +1,17 @@
 package com.artist;
 
+import com.Test;
 import com.member.Member;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,63 +19,51 @@ import java.util.List;
 
 @Repository
 public class ArtistDao {
-    Dotenv dotenv;
-    private String driver = "com.mysql.jdbc.Driver";
-    private String url;
-    private String user;
-    private String pw;
-
     private Connection conn;
     private PreparedStatement psmt;
     private ResultSet rs;
 
-    public ArtistDao(){
-        try{
-            dotenv = Dotenv.configure().directory("./").filename(".env").load();
-            url = dotenv.get("url");
-            user = dotenv.get("user");
-            pw = dotenv.get("pw");
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, pw);
-        }
-        catch(ClassNotFoundException | SQLException e){
-            e.printStackTrace();
-        }
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    public ArtistDao(DataSource dataSource){
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     public List<String> getAllArtists(){
         List<String> artistList = new ArrayList<>();
-        try{
-            String sql = "SELECT name FROM artist";
-            psmt = conn.prepareStatement(sql);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                artistList.add(rs.getString(1));
+        String sql = "SELECT name FROM artist";
+        artistList = jdbcTemplate.query(sql, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                return resultSet.getString("name");
             }
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
+        });
+        if(artistList.isEmpty())
+            return null;
         return artistList;
     }
     public Artist getArtistDetail(String target){
-        Artist artist = new Artist();
+        String sql = "SELECT * FROM artist WHERE name=? LIMIT 1";
         try{
-            String sql = "SELECT * FROM artist WHERE name=? LIMIT 1";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, target);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                artist.setName(rs.getString("name"));
-                if(rs.getString("company")!=null)
+            Artist artist = jdbcTemplate.queryForObject(sql, new Object[]{target}, new RowMapper<Artist>(){
+                @Override
+                public Artist mapRow(ResultSet rs, int i) throws SQLException {
+                    Artist artist = new Artist();
+                    artist.setName(rs.getString("name"));
                     artist.setCompany(rs.getString("company"));
-                if(rs.getString("artistInfo")!=null)
                     artist.setArtistInfo(rs.getString("artistInfo"));
-            }
+                    artist.setAuthor(rs.getString("author"));
+                    return artist;
+                }
+            });
             if(artist.getName()!=null)
                 return artist;
         }
-        catch(Exception e){
+        catch (DataAccessException e){
             e.printStackTrace();
         }
         return null;
@@ -77,16 +72,16 @@ public class ArtistDao {
         List<String> list = new ArrayList<>();
         try{
             String sql = "SELECT name FROM member WHERE team=?";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, artist);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                list.add(rs.getString("name"));
-            }
+            list = jdbcTemplate.query(sql, new Object[]{artist}, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                    return resultSet.getString("name");
+                }
+            });
             if(!list.isEmpty())
                 return list;
         }
-        catch(Exception e){
+        catch (DataAccessException e){
             e.printStackTrace();
         }
         return null;
@@ -95,34 +90,16 @@ public class ArtistDao {
         List<String> list = new ArrayList<>();
         try{
             String sql = "SELECT title FROM album WHERE artist=?";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, artist);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                list.add(rs.getString("title"));
-            }
+            list = jdbcTemplate.query(sql, new Object[]{artist}, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                    return resultSet.getString("title");
+                }
+            });
             if(!list.isEmpty())
                 return list;
         }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public List<String> getTracksFromArtist(String artist){
-        List<String> list = new ArrayList<>();
-        try{
-            String sql = "SELECT title FROM track WHERE artist=? LIMIT 5";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, artist);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                list.add(rs.getString("title"));
-            }
-            if(!list.isEmpty())
-                return list;
-        }
-        catch(Exception e){
+        catch (DataAccessException e){
             e.printStackTrace();
         }
         return null;
