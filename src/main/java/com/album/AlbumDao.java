@@ -1,7 +1,9 @@
 package com.album;
 
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
-import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -10,63 +12,46 @@ import java.util.List;
 
 @Repository
 public class AlbumDao {
-    Dotenv dotenv;
-    private String driver = "com.mysql.jdbc.Driver";
-    private String url;
-    private String user;
-    private String pw;
-
-    private Connection conn;
-    private PreparedStatement psmt;
-    private ResultSet rs;
-
-    public AlbumDao(){
-        try{
-            dotenv = Dotenv.configure().directory("./").filename(".env").load();
-            url = dotenv.get("url");
-            user = dotenv.get("user");
-            pw = dotenv.get("pw");
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, pw);
-        }
-        catch(ClassNotFoundException | SQLException e){
-            e.printStackTrace();
-        }
-    }
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     public List<String> getAllAlbums(){
-        List<String> albumList = new ArrayList<>();
+        List<String> albumList;
         try{
             String sql = "SELECT title FROM album";
-            psmt = conn.prepareStatement(sql);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                albumList.add(rs.getString("title"));
-            }
+            albumList = jdbcTemplate.query(sql, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                    return resultSet.getString("title");
+                }
+            });
             if(!albumList.isEmpty())
                 return albumList;
         }
-        catch (SQLException e){
+        catch (DataAccessException e){
             e.printStackTrace();
         }
         return null;
     }
 
     public Album getAlbumDetail(String target){
-        Album album = new Album();
+        Album album;
         try{
             String sql = "SELECT * FROM album WHERE title=?";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, target);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                album.setTitle(rs.getString("title"));
-                album.setArtist(rs.getString("artist"));
-            }
+            album = jdbcTemplate.queryForObject(sql, new Object[]{target}, new RowMapper<Album>() {
+                @Override
+                public Album mapRow(ResultSet resultSet, int i) throws SQLException {
+                    Album album = new Album();
+                    album.setTitle(resultSet.getString("title"));
+                    album.setArtist(resultSet.getString("artist"));
+                    album.setAuthor(resultSet.getString("author"));
+                    return album;
+                }
+            });
             if(album.getTitle()!=null)
                 return album;
         }
-        catch (SQLException e){
+        catch (DataAccessException e){
             e.printStackTrace();
         }
         return null;
@@ -75,32 +60,27 @@ public class AlbumDao {
         List<String> trackList = new ArrayList<>();
         try{
             String sql = "SELECT title FROM track WHERE album=?";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, target);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                trackList.add(rs.getString("title"));
-            }
+            trackList = jdbcTemplate.query(sql, new Object[]{target}, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                    return resultSet.getString("title");
+                }
+            });
             if(!trackList.isEmpty())
                 return trackList;
         }
-        catch (SQLException e){
+        catch (DataAccessException e){
             e.printStackTrace();
         }
         return null;
     }
     public String insertAlbum(Album album, String author){
+        int sqlResult = 0;
         try{
             String sql = "INSERT into album (title, artist, author) VALUES (?, ?, ?)";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, album.getTitle());
-            psmt.setString(2, album.getArtist());
-            psmt.setString(3, author);
-            psmt.executeUpdate();
+            sqlResult = jdbcTemplate.update(sql, album.getTitle(), album.getArtist(), author);
         }
-        catch (SQLException e){
-            if(e instanceof MySQLIntegrityConstraintViolationException)
-                return "Duplicate PK";
+        catch (DataAccessException e){
             return "DB Error";
         }
         return "Success";

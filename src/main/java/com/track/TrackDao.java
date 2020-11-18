@@ -2,6 +2,10 @@ package com.track;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -10,65 +14,48 @@ import java.util.List;
 
 @Repository
 public class TrackDao {
-    Dotenv dotenv;
-    private String driver = "com.mysql.jdbc.Driver";
-    private String url;
-    private String user;
-    private String pw;
-
-    private Connection conn;
-    private PreparedStatement psmt;
-    private ResultSet rs;
-
-    public TrackDao(){
-        try{
-            dotenv = Dotenv.configure().directory("./").filename(".env").load();
-            url = dotenv.get("url");
-            user = dotenv.get("user");
-            pw = dotenv.get("pw");
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, pw);
-        }
-        catch(ClassNotFoundException | SQLException e){
-            e.printStackTrace();
-        }
-    }
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     public List<String> getAllTracks(){
         List<String> trackList = new ArrayList<>();
         try{
             String sql = "SELECT title FROM track";
-            psmt = conn.prepareStatement(sql);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                trackList.add(rs.getString("title"));
-            }
+            trackList = jdbcTemplate.query(sql, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                    return resultSet.getString("title");
+                }
+            });
             if(!trackList.isEmpty())
                 return trackList;
         }
-        catch (SQLException e){
+        catch (DataAccessException e){
             e.printStackTrace();
         }
         return null;
     }
     public Track getTrackDetail(String target){
-        Track track = new Track();
+        Track track;
         try{
             String sql = "SELECT * FROM track WHERE title=?";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, target);
-            rs = psmt.executeQuery();
-            while(rs.next()){
-                track.setTitle(rs.getString("title"));
-                track.setArtist(rs.getString("artist"));
-                track.setAlbum(rs.getString("album"));
-                track.setLyrics(rs.getString("lyrics"));
-                track.setYoutubeId(rs.getString("youtubeId"));
-            }
+            track = jdbcTemplate.queryForObject(sql, new Object[]{target}, new RowMapper<Track>() {
+                @Override
+                public Track mapRow(ResultSet resultSet, int i) throws SQLException {
+                    Track track = new Track();
+                    track.setTitle(resultSet.getString("title"));
+                    track.setArtist(resultSet.getString("artist"));
+                    track.setAlbum(resultSet.getString("album"));
+                    track.setLyrics(resultSet.getString("lyrics"));
+                    track.setYoutubeId(resultSet.getString("youtubeId"));
+                    track.setAuthor(resultSet.getString("author"));
+                    return track;
+                }
+            });
             if(track.getTitle()!=null)
                 return track;
         }
-        catch (SQLException e){
+        catch (DataAccessException e){
             e.printStackTrace();
         }
         return null;
@@ -76,27 +63,9 @@ public class TrackDao {
     public String insertTrack(Track track, String author){
         try{
             String sql = "INSERT INTO track (title, artist, album, lyrics, youtubeId, author) VALUES (?, ?, ?, ?, ?, ?)";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, track.getTitle());
-            psmt.setString(2, track.getArtist());
-            if(track.getAlbum()!=null)
-                psmt.setString(3, track.getAlbum());
-            else
-                psmt.setString(3, null);
-            if(track.getLyrics()!=null)
-                psmt.setString(4, track.getLyrics());
-            else
-                psmt.setString(4, null);
-            if(track.getYoutubeId()!=null)
-                psmt.setString(5, track.getYoutubeId());
-            else
-                psmt.setString(5, null);
-            psmt.setString(6, author);
-            psmt.executeUpdate();
+            jdbcTemplate.update(sql, track.getTitle(), track.getArtist(), track.getAlbum(), track.getLyrics(), track.getYoutubeId(), track.getAuthor());
         }
-        catch (SQLException e){
-            if(e instanceof MySQLIntegrityConstraintViolationException)
-                return "Duplicate PK";
+        catch (DataAccessException e){
             return "DB Error";
         }
         return "Success";
