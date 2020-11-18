@@ -1,9 +1,6 @@
 package com.artist;
 
-import com.Test;
-import com.member.Member;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,27 +8,14 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Repository
 public class ArtistDao {
-    private Connection conn;
-    private PreparedStatement psmt;
-    private ResultSet rs;
-
+    @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    public ArtistDao(DataSource dataSource){
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
 
     public List<String> getAllArtists(){
         List<String> artistList = new ArrayList<>();
@@ -108,22 +92,10 @@ public class ArtistDao {
         int res = 0;
         try{
             String sql = "INSERT INTO artist (name, company, artistInfo, author) values (?, ?, ?, ?)";
-            psmt = conn.prepareStatement(sql);
-            psmt.setString(1, artist.getName());
-            if(artist.getCompany()!=null)
-                psmt.setString(2, artist.getCompany());
-            else
-                psmt.setString(2, null);
-            if(artist.getArtistInfo()!=null)
-                psmt.setString(3, artist.getArtistInfo());
-            else
-                psmt.setString(3, null);
-            psmt.setString(4, author);
-            res = psmt.executeUpdate();
+            res = jdbcTemplate.update(sql, artist.getName(), artist.getCompany(), artist.getArtistInfo(), author);
         }
-        catch (SQLException e){
-            if(e instanceof MySQLIntegrityConstraintViolationException)
-                return "Duplicate PK";
+        catch (DataAccessException e){
+            e.printStackTrace();
             return "DB Error";
         }
         return "Success";
