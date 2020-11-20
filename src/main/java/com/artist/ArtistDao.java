@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ArtistDao {
@@ -93,6 +94,44 @@ public class ArtistDao {
         try{
             String sql = "INSERT INTO artist (name, company, artistInfo, author) values (?, ?, ?, ?)";
             res = jdbcTemplate.update(sql, artist.getName(), artist.getCompany(), artist.getArtistInfo(), author);
+        }
+        catch (DataAccessException e){
+            e.printStackTrace();
+            return "DB Error";
+        }
+        return "Success";
+    }
+//    // 0. sql문에 value를 직접 다 입력 (바뀐 값만 업데이트)
+//    public String updateArtist(String target, Map<String, String> changeMap){
+//        int res = 0;
+//        try{
+//            if(changeMap.isEmpty())
+//                return "Success";
+//            String sql = "UPDATE artist SET";
+//            for(String key : changeMap.keySet()){
+//                if(changeMap.get(key)!=null)
+//                    sql += (" " + key + "=\"" + changeMap.get(key) + "\",");
+//                else
+//                    sql += (" " + key + "=" + "NULL" + ",");
+//            }
+//            sql = sql.substring(0, sql.length()-1);
+//            System.out.println(sql);
+//            sql += " WHERE name=\"" + target + "\"";
+//            res = jdbcTemplate.update(sql);
+//        }
+//        catch (DataAccessException e){
+//            e.printStackTrace();
+//            return "DB Error";
+//        }
+//
+//        return "Success";
+//    }
+    // 1. 그냥 싹 다 업데이트
+    public String updateArtist(String target, Artist artist){
+        int res = 0;
+        try{
+            String sql = "UPDATE artist SET name=?, company=?, artistInfo=? WHERE name=?";
+            jdbcTemplate.update(sql, artist.getName(), artist.getCompany(), artist.getArtistInfo(), target);
         }
         catch (DataAccessException e){
             e.printStackTrace();
