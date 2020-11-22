@@ -17,4 +17,11 @@
     </beans:bean>
 
     <context:component-scan base-package="com"/>
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**/register"/>
+            <mvc:mapping path="/**/update"/>
+            <beans:bean class="com.LoginCheckInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 </beans>
