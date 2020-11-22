@@ -63,10 +63,20 @@ public class TrackDao {
     public String insertTrack(Track track, String author){
         try{
             String sql = "INSERT INTO track (title, artist, album, lyrics, youtubeId, author) VALUES (?, ?, ?, ?, ?, ?)";
-            jdbcTemplate.update(sql, track.getTitle(), track.getArtist(), track.getAlbum(), track.getLyrics(), track.getYoutubeId(), track.getAuthor());
+            jdbcTemplate.update(sql, track.getTitle(), track.getArtist(), track.getAlbum(), track.getLyrics(), track.getYoutubeId(), author);
         }
         catch (DataAccessException e){
             return "DB Error";
+        }
+        return "Success";
+    }
+    public String updateTrack(String target, Track track){
+        try{
+            String sql = "UPDATE track SET title=?, artist=?, album=?, lyrics=?, youtubeId=? WHERE title=?";
+            jdbcTemplate.update(sql, track.getTitle(), track.getArtist(), track.getAlbum(), track.getLyrics(), track.getYoutubeId(), target);
+        }
+        catch (DataAccessException e){
+            return "DB error";
         }
         return "Success";
     }

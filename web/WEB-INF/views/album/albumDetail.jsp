@@ -53,6 +53,7 @@
 <div class="container" style="padding:50px;">
     <h3>Album Detail</h3>
     <h4>${target.title}</h4>
+    <c:if test="${sessionScope.user.nickname.equals(target.author)}"><a class="no_linkdecoration" href="/album/update?target=${target.title}">정보 수정</a><br/></c:if>
     <ul>
         <li>Artist -
             <a class="no_linkdecoration" href="${pageContext.request.contextPath}/artist/detail?target=${fn:replace(target.artist, " ", "-")}">${target.artist}</a>

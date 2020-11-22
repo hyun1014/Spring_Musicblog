@@ -85,4 +85,15 @@ public class AlbumDao {
         }
         return "Success";
     }
+    public String updateAlbum(String target, Album album){
+        int sqlResult = 0;
+        try{
+            String sql = "UPDATE album SET title=?, artist=? WHERE title=?";
+            sqlResult = jdbcTemplate.update(sql, album.getTitle(), album.getArtist(), target);
+        }
+        catch (DataAccessException e){
+            return "DB error";
+        }
+        return "Success";
+    }
 }
