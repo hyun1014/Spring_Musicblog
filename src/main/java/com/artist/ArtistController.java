@@ -8,12 +8,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.support.HttpRequestHandlerServlet;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/artist")
@@ -74,5 +78,39 @@ public class ArtistController {
         if(sqlResult.equals("Duplicate PK"))
             model.addAttribute("error", "이미 존재하는 아티스트입니다.");
         return "artist/artistRegisterCheck";
+    }
+    @RequestMapping(value = "/update", method = RequestMethod.GET)
+    public String artistUpdate(Model model, HttpServletRequest request, @ModelAttribute("art") Artist artist){
+        Artist formerArtist = dao.getArtistDetail(request.getParameter("target"));
+        artist.setName(formerArtist.getName());
+        artist.setCompany(formerArtist.getCompany());
+        artist.setArtistInfo(formerArtist.getArtistInfo());
+        model.addAttribute("target", formerArtist.getName());
+        return "artist/artistUpdate";
+    }
+    @RequestMapping(value = "/updatecheck", method = RequestMethod.POST)
+    public String artistUpdateCheck(Model model, HttpServletRequest request, @ModelAttribute("art") Artist artist, RedirectAttributes rattr){
+        Artist formerArtist = dao.getArtistDetail(request.getParameter("target"));
+        if(artist.getCompany().equals(""))
+            artist.setCompany(null);
+        if(artist.getArtistInfo().equals(""))
+            artist.setArtistInfo(null);
+//        // 0. sql문에 value를 직접 다 입력 (바뀐 값만 업데이트)
+//        Map<String, String> map = new HashMap<>();
+//        if(!artist.getName().equals(formerArtist.getName()))
+//            map.put("name", artist.getName());
+//        if(artist.getCompany()==null)
+//            map.put("company", null);
+//        else if(!artist.getCompany().equals(formerArtist.getCompany()))
+//            map.put("company", artist.getCompany());
+//        if(artist.getArtistInfo()==null)
+//            map.put("artistInfo", null);
+//        else if(!artist.getArtistInfo().equals(formerArtist.getArtistInfo()))
+//            map.put("artistInfo", artist.getArtistInfo());
+//        dao.updateArtist(formerArtist.getName(), map);
+        // 1. 그냥 싹 다 업데이트
+        dao.updateArtist(formerArtist.getName(), artist);
+        rattr.addAttribute("target", artist.getName());
+        return "redirect:/artist/detail";
     }
 }

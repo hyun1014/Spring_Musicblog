@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -58,6 +59,25 @@ public class MemberController {
         if(sqlResult.equals("Duplicate PK"))
             mav.addObject("error", "이미 존재하는 멤버입니다.");
         mav.setViewName("member/memberRegisterCheck");
+        return mav;
+    }
+    @RequestMapping("/update")
+    public ModelAndView memberUpdate(@ModelAttribute("mem") Member member, HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+        Member formerMember = dao.getMemberDetail(request.getParameter("target"));
+        member.setName(formerMember.getName());
+        member.setTeam(formerMember.getTeam());
+        mav.addObject("target", formerMember.getName());
+        mav.setViewName("member/memberUpdate");
+        return mav;
+    }
+    @RequestMapping(value = "/updatecheck", method = RequestMethod.POST)
+    public ModelAndView memberUpdateCheck(@ModelAttribute("mem") Member member, RedirectAttributes rattr, HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+        Member formerMember = dao.getMemberDetail(request.getParameter("target"));
+        dao.updateMember(formerMember.getName(), member);
+        mav.setViewName("redirect:/member/detail");
+        rattr.addAttribute("target", member.getName());
         return mav;
     }
 }

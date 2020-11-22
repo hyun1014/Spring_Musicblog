@@ -1,5 +1,8 @@
 package com.artist;
 
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
 public class Artist {
     private String name = "Default";
     private String company;

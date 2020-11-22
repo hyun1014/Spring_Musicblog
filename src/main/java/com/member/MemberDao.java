@@ -68,4 +68,16 @@ public class MemberDao {
         }
         return "Success";
     }
+    public String updateMember(String target, Member member){
+        int res = 0;
+        try{
+            String sql = "UPDATE member SET name=?, team=? WHERE name=?";
+            jdbcTemplate.update(sql, member.getName(), member.getTeam(), target);
+        }
+        catch (DataAccessException e){
+            e.printStackTrace();
+            return "DB error";
+        }
+        return "Success";
+    }
 }

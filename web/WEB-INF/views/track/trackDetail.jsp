@@ -53,6 +53,7 @@
 <div class="container" style="padding:50px;">
     <h3>Track Detail</h3>
     <h4>${target.title}</h4>
+    <c:if test="${sessionScope.user.nickname.equals(target.author)}"><a class="no_linkdecoration" href="${pageContext.request.contextPath}/track/update?target=${target.title}">정보 수정</a> </c:if>
     <div width="700px" style="float:left; margin:0px 50px 0px 0px;">
         <ul>
             <li>Artist -

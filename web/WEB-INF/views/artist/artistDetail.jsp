@@ -53,6 +53,7 @@
 <div class="container" style="padding:50px;">
     <h3>Artist Detail</h3>
     <h4>${target.name}</h4>
+    <c:if test="${sessionScope.user.nickname.equals(target.author)}"><a class="no_linkdecoration" href="/artist/update?target=${target.name}">정보 수정</a><br/></c:if>
     <ul>
         <li>Company - <c:if test="${not empty target.company}">${target.company}</c:if><c:if test="${empty target.company}">정보가 없습니다</c:if></li>
         <c:if test="${not empty memberList}">
@@ -78,6 +79,17 @@
                 등록된 앨범이 없습니다.
             </c:if>
         </li>
+        <li>
+            아티스트 정보<br/>
+            <c:if test="${not empty target.artistInfo}">
+            <pre>${target.artistInfo}</pre>
+            </c:if>
+            <c:if test="${empty albumList}">
+                등록된 정보가 없습니다.
+            </c:if>
+
+        </li>
+
     </ul>
     <p>작성자: ${target.author}</p>
 </div>

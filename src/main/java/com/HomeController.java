@@ -53,4 +53,8 @@ public class HomeController {
         String sqlResult = dao.insertUser(user);
         return "joinCheck";
     }
+    @RequestMapping(value="/error", method = RequestMethod.GET)
+    public String showError(Model model){
+        return "errorPage";
+    }
 }
